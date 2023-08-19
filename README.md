@@ -1,7 +1,10 @@
 # IALAB
 Progetti del corso di Intelligenza Artificiale
 
-In questo repository troverete vari progetti correlati agli obiettivi e ai risultati di apprendimento del corso.
+In questo repository troverete vari progetti correlati agli obiettivi e ai risultati di apprendimento del corso svolti in gruppo con
+- leonardo.magliolo@edu.unito.it
+- mattia.marra@edu.unito.it
+
 
 ## Panoramica del Corso
 
