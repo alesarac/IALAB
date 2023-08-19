@@ -1,0 +1,15 @@
+swipl
+pwd.
+working_directory(CWD,'C:/Users/aless/Documents/UNI/IALAB/Progetti/Pozzato/PROLOG SARACCO MAGLIOLO MARRA 2022/Labirinti').
+working_directory(CWD,'C:/Users/aless/Documents/UNI/IALAB/Progetti/Pozzato/PROLOG SARACCO MAGLIOLO MARRA 2022').
+
+#10 GB
+set_prolog_stack(local, limit(10000000000)). 
+
+consult("regole.pl").
+
+	consult("aStar_Manhattan.pl").
+	consult("aStar_Diagonal.pl").
+	
+consult("1000x1000 MS.pl").
+aStar().

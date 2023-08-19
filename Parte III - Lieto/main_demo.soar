@@ -1,0 +1,8 @@
+rl -s learning on
+rl -s learning-policy sarsa
+indifferent-selection --epsilon-greedy
+load file setup-rules.soar
+load file rl-reward_rules.soar
+run
+init-soar
+print --rl

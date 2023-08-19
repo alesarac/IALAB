@@ -1,0 +1,285 @@
+gp {escape*generate*rl-rule*cammina*stanza*asciutta
+   (state <s> ^operator <op> +)
+   (<op> ^name cammina-asciutta
+      ^to.name [elastico pietra rametto finestra tronco pneumatico]
+      ^from.name [elastico pietra rametto finestra tronco pneumatico])
+  -->
+  (<s> ^operator <op> = 0)
+}
+
+gp {escape*generate*rl-rule*cammina*stanza*bagnata
+   (state <s> ^operator <op> +)
+   (<op> ^name cammina-bagnata
+      ^to.name [elastico pietra rametto finestra tronco pneumatico]
+      ^from.name [elastico pietra rametto finestra tronco pneumatico])
+  -->
+  (<s> ^operator <op> = 0)
+}
+
+gp {escape*generate*rl-rule*prendi
+   (state <s> ^operator <op> +)
+   (<op> ^name prendi
+      ^oggetti.name [elastico pietra rametto tronco pneumatico]
+      ^tasche.is [tasca_sx tasca_dx])
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+
+sp {escape*generate*rl-rule*asciuga
+   (state <s> ^operator <op> +)
+   (<op> ^name asciuga
+)
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+gp {escape*generate*rl-rule*togli
+   (state <s> ^operator <op> +)
+   (<op> ^name togli
+      ^oggetti.name [pietra rametto elastico tronco pneumatico]
+      ^tasche.is [tasca_sx tasca_dx])
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+sp {escape*rl-rule*combinazione*fionda
+   (state <s> ^operator <op> +)
+   (<op> ^name combinazione
+      ^oggetti (<c> ^name fionda)
+      ^ingredienti (<ogg_1> ^name elastico) (<ogg_2> ^name rametto))
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+sp {escape*rl-rule*combinazione*martello
+   (state <s> ^operator <op> +)
+   (<op> ^name combinazione
+      ^oggetti.name martello
+      ^ingredienti (<ob1> ^name pietra) (<ob2> ^name rametto))
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+sp {escape*rl-rule*combinazione*collana
+   (state <s> ^operator <op> +)
+   (<op> ^name combinazione
+      ^oggetti.name collana
+      ^ingredienti (<ogg_1> ^name elastico) (<ogg_2> ^name pietra))
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+sp {escape*rl-rule*combinazione*pneumatico-elastico
+   (state <s> ^operator <op> +)
+   (<op> ^name combinazione
+      ^oggetti.name pneumatico-elastico
+      ^ingredienti (<ogg_1> ^name pneumatico) (<ogg_2> ^name elastico))
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+sp {escape*rl-rule*combinazione*pneumatico-rametto
+   (state <s> ^operator <op> +)
+   (<op> ^name combinazione
+      ^oggetti.name pneumatico-rametto
+      ^ingredienti (<ogg_1> ^name pneumatico) (<ogg_2> ^name rametto))
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+sp {escape*rl-rule*combinazione*pneumatico-pietra
+   (state <s> ^operator <op> +)
+   (<op> ^name combinazione
+      ^oggetti.name pneumatico-pietra
+      ^ingredienti (<ogg_1> ^name pneumatico) (<ogg_2> ^name pietra))
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+gp {escape*generate*rl-rule*uso-tronco-bagnata
+   (state <s> ^operator <op> +)
+   (<op> ^name uso-tronco-bagnata
+      ^oggetti.name tronco)
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+gp {escape*generate*rl-rule*uso-tronco-asciutta
+   (state <s> ^operator <op> +)
+   (<op> ^name uso-tronco-asciutta
+      ^oggetti.name tronco)
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+gp {escape*generate*rl-rule*uso-fionda-lontano
+   (state <s> ^operator <op> +)
+   (<op> ^name uso-fionda-lontano
+      ^oggetti.name fionda)
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+gp {escape*generate*rl-rule*uso-fionda-vicino
+   (state <s> ^operator <op> +)
+   (<op> ^name uso-fionda-vicino
+      ^oggetti.name fionda)
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+sp {escape*rl-rule*escape
+   (state <s> ^operator <op> +)
+   (<op> ^name escape)
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+###### REWARDS ###################################################################################### 
+
+
+sp {escape*elaborate*reward*cammina*stanza*asciutta
+   (state <s> ^name escape
+      ^reward-link <r>
+      ^azione-svolta cammina-asciutta)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value -0.5)
+}
+
+sp {escape*elaborate*reward*cammina*stanza*bagnata
+   (state <s> ^name escape
+      ^reward-link <r>
+      ^azione-svolta cammina-bagnata)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value -0.8)
+}
+
+
+sp {escape*elaborate*reward*togli
+   (state <s> ^name escape
+      ^reward-link <r>
+      ^azione-svolta togli)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value -1)
+}
+
+
+sp {escape*elaborate*reward*prendi
+   (state <s> ^name escape
+      ^reward-link <r>
+      ^azione-svolta prendi)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value 0.5)
+}
+
+sp {escape*elaborate*reward*asciuga
+   (state <s> ^name escape
+      ^reward-link <r>
+      ^azione-svolta asciuga)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value 1)
+}
+
+
+sp {escape*elaborate*reward*combination
+   (state <s> ^name escape
+      ^reward-link <r>
+      ^tasche.tiene <c>
+      ^combinazione <c>
+      ^azione-svolta combinazione)
+   (<c> ^reward <d-reward>)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value <d-reward>)
+}
+
+gp {escape*elaborate*reward*uso-tronco-bagnata
+   (state <s> ^name escape
+              ^reward-link <r>
+              ^altezza [2.5 3.5]
+              ^azione-svolta uso-tronco-bagnata)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value 0.5)
+}
+
+gp {escape*elaborate*reward*uso-tronco-asciutta
+   (state <s> ^name escape
+              ^reward-link <r>
+              ^altezza [2.5 3.5]
+              ^azione-svolta uso-tronco-asciutta)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value 1)
+}
+
+sp {escape*elaborate*reward*uso-fionda-lontano
+   (state <s> ^name escape
+              ^reward-link <r>
+              ^azione-svolta uso-fionda-lontano)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value 0.5)
+}
+
+sp {escape*elaborate*reward*uso-fionda-vicino
+   (state <s> ^name escape
+              ^reward-link <r>
+              ^azione-svolta uso-fionda-vicino)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value 1)
+}
+
+sp {escape*elaborate*reward*finito*successo
+   (state <s> ^name escape
+              ^reward-link <r>
+              ^fuggito si)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value 3)
+}
+
+sp {escape*elaborate*finito*successo
+   (state <s> ^name escape
+              ^fuggito si
+              ^vicino <finestra>)
+  -->
+  (write (crlf) (crlf) |CE L'HO FATTA, SONO FUGGITO!| (crlf))
+  (halt)
+}
+
+sp {escape*elaborate*reward*finito*fallimento
+   (state <s> ^name escape
+              ^reward-link <r>
+              ^oggetti <c> <finestra>
+              ^tasche <z>
+              ^combinazione <c>)
+   (<z> ^tiene <c>)
+   (<c> ^name <> fionda)
+   (<finestra> ^name finestra ^rotta no)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value -3)
+}
+
+sp {escape*elaborate*finito*fallimento
+   (state <s> ^name escape
+              ^reward-link <r>
+              ^oggetti <c> <finestra>
+              ^tasche <z>
+              ^combinazione <c>)
+   (<z> ^tiene <c>)
+   (<c> ^name <n> <> fionda)
+   (<finestra> ^name finestra ^rotta no)
+   (<r> ^reward <rr>)
+  -->
+   (write (crlf) (crlf) |HO FALLITO, CON: | <n> | NON POSSO ROMPERE LA FINESTRA..|)
+   (halt)
+}

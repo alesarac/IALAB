@@ -1,0 +1,399 @@
+sp {escape*space*initialize-escape
+   (state <s> ^superstate nil -^impasse)
+  -->
+  #stato S
+   (<s> ^name escape
+        ^oggetti <ogg_1> <ogg_2> <ogg_3> <ogg_4> <ogg_5> <ogg_6> <finestra>
+        ^vicino <ogg_1> #oggetto vicino all'agente
+        ^tasche <t1> <t2> #tasche dell'agente
+        ^stanza <st>
+        ^combinazione <combo1> <combo2> <combo3> <combo4> <combo5> <combo6>
+        ^altezza 1.5
+        ^azione-svolta none)
+
+   #tasche dell'agente
+   (<t1> ^tiene nil ^is tasca_sx)
+   (<t2> ^tiene nil ^is tasca_dx)
+   
+   #oggetti a disposizione
+   (<ogg_1> ^name elastico)
+   (<ogg_2> ^name rametto)
+   (<ogg_3> ^name pietra)
+   (<ogg_4> ^name tronco ^altezza 1.0)
+   (<ogg_5> ^name tronco ^altezza 1.0)
+   (<ogg_6> ^name pneumatico)
+   
+   #stanza
+   (<st> ^name pavimento ^stato bagnato)
+   
+   #combinazioni possibili
+   (<combo1> ^ingredienti <ogg_1> <ogg_2> ^name fionda ^reward 1)
+   (<combo2> ^ingredienti <ogg_3> <ogg_2> ^name martello ^reward -1)
+   (<combo3> ^ingredienti <ogg_1> <ogg_3> ^name collana ^reward -1)
+   (<combo4> ^ingredienti <ogg_6> <ogg_1> ^name pneumatico-elastico ^reward -1)
+   (<combo5> ^ingredienti <ogg_6> <ogg_2> ^name pneumatico-rametto ^reward -1)
+   (<combo6> ^ingredienti <ogg_6> <ogg_3> ^name pneumatico-pietra ^reward -1)
+
+   #finestra
+   (<finestra> ^name finestra ^altezza 3.5 ^rotta no)
+
+   (write (crlf) (crlf) |SONO L'AGENTE SOAR E DEVO FUGGIRE DALLA STANZA..|)
+   (write (crlf) (crlf) |PER FUGGIRE, DOVRÒ ROMPERE LA FINESTRA IN QUALCHE MODO..|)
+   (write (crlf))
+}
+
+
+# si sposta con il pavimento asciutto
+sp {escape*propose*cammina*stanza*asciutta
+   (state <s> ^name escape 
+      ^oggetti <ogg_1> <ogg_2>
+      ^vicino {<ogg_2> <> <ogg_1>}
+      -^vicino <ogg_1>
+      -^preso <ogg_1>)
+   (<st> ^name pavimento ^stato asciutto)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name cammina-asciutta
+      ^to <ogg_1>
+      ^from <ogg_2>)
+}
+
+sp {escape*apply*cammina*stanza*asciutta
+   (state <s> ^name escape 
+      ^operator <op>
+      ^oggetti <ogg_1> <ogg_2>
+      ^vicino {<> <ogg_1> <ogg_2>}
+      ^azione-svolta <a>)
+   (<op> ^name cammina-asciutta
+         ^to <ogg_1>
+         ^from <ogg_2>)
+   (<ogg_1> ^name <n>)
+   (<ogg_2> ^name <n2>)
+   (<st> ^name pavimento ^stato asciutto)
+  -->
+   (<s> ^vicino <ogg_2> - <ogg_1> +)
+   (<s> ^azione-svolta <a> - cammina-asciutta)
+   (write (crlf) (crlf) |Ho camminato verso: | <n>)
+}
+
+# si sposta con il pavimento bagnato
+sp {escape*propose*cammina*stanza*bagnata
+   (state <s> ^name escape 
+      ^oggetti <ogg_1> <ogg_2>
+      ^vicino {<ogg_2> <> <ogg_1>}
+      -^vicino <ogg_1>
+      -^preso <ogg_1>)
+   (<st> ^name pavimento ^stato bagnato)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name cammina-bagnata
+      ^to <ogg_1>
+      ^from <ogg_2>)
+}
+
+sp {escape*apply*cammina*stanza*bagnata
+   (state <s> ^name escape 
+      ^operator <op>
+      ^oggetti <ogg_1> <ogg_2>
+      ^vicino {<> <ogg_1> <ogg_2>}
+      ^azione-svolta <a>)
+   (<op> ^name cammina-bagnata
+         ^to <ogg_1>
+         ^from <ogg_2>)
+   (<ogg_1> ^name <n>)
+   (<ogg_2> ^name <n2>)
+   (<st> ^name pavimento ^stato bagnato)
+  -->
+   (<s> ^vicino <ogg_2> - <ogg_1> +)
+   (<s> ^azione-svolta <a> - cammina-bagnata)
+   (write (crlf) (crlf) |Sono scivolato mentre camminavo verso: | <n>)
+}
+
+#raccoglie e mette l'oggetto raggiunto e vicino a lui in tasca
+sp {escape*propose*prendi
+   (state <s> ^name escape
+      ^vicino <ogg>
+      ^oggetti <ogg>
+      ^tasche <z>
+      -^preso <ogg>)
+   (<z> ^tiene nil)
+   -(<ogg> ^name finestra)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name prendi
+      ^oggetti <ogg>
+      ^tasche <z>)
+}
+
+sp {escape*apply*prendi
+   (state <s> ^operator <op>
+      ^vicino <ogg>
+      -^preso <ogg>
+      ^azione-svolta <a>)
+   (<op> ^name prendi
+      ^oggetti <ogg>
+      ^tasche <z>)
+   (<z> ^tiene nil)
+   (<ogg> ^name <n>)
+  -->
+   (<s> ^preso <ogg>)
+   (<z> ^tiene nil - <ogg>)
+   (<s> ^azione-svolta <a> - prendi)
+   (write (crlf) (crlf) |Ho preso e messo in tasca: | <n>)
+}
+
+# crea una combinazione con i due oggetti che ha in tasca
+sp {escape*propose*combinazione
+   (state <s> ^name escape
+      ^tasche <t1> <t2>
+      ^combinazione <c>)
+   (<t1> ^tiene <ogg_1> ^is tasca_sx)
+   (<t2> ^tiene <ogg_2> ^is tasca_dx)
+   (<c> ^ingredienti <ogg_1> {<ogg_2> <> <ogg_1>})
+   (<finestra> ^name finestra ^rotta no)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name combinazione
+      ^oggetti <c>
+      ^ingredienti <ogg_1> <ogg_2>)
+}
+
+sp {escape*apply*combinazione
+   (state <s> ^operator <op>
+      ^tasche <t1> <t2>
+      ^azione-svolta <a>)
+   (<op> ^name combinazione
+      ^oggetti <c>
+      ^ingredienti <ogg_1> <ogg_2>)
+   (<c> ^name <n>)
+   (<t1> ^tiene <ogg_1> ^is tasca_sx)
+   (<t2> ^tiene <ogg_2> ^is tasca_dx)
+   (<finestra> ^name finestra ^rotta no)
+  -->
+   (<s> ^oggetti <c> ^preso <c>)
+   (<t1> ^tiene <ogg_1> - <c>)
+   (<t2> ^tiene <ogg_2> - nil)
+   (<s> ^azione-svolta <a> - combinazione)
+   (write (crlf) (crlf) |SONO RIUSCITO A COSTRUIRE: | <n>)
+}
+
+# usa la fionda da lontano, cioè non davanti alla finestra, quindi ha meno probabilità di romperla
+sp {escape*propose*uso*fionda-lontano
+   (state <s> ^name escape
+      ^tasche <t1> <t2>
+      ^oggetti <finestra>
+      ^altezza <> 3.5)
+   (<finestra> ^name finestra ^rotta no)
+   (<t1> ^tiene (<c> ^name fionda))
+   (<t2> ^tiene.name pietra)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name uso-fionda-lontano
+      ^oggetti <c>)
+}
+
+sp {escape*apply*uso*fionda-lontano
+   (state <s> ^operator <op>
+      ^oggetti <finestra>
+      ^azione-svolta <a>
+      ^tasche (<z> ^tiene <ogg>)
+      ^altezza <> 3.5)
+   (<ogg> ^name pietra)
+   (<op> ^name uso-fionda-lontano ^oggetti <c>)
+   (<finestra> ^name finestra ^rotta no)
+   (<c> ^name fionda)
+  -->
+   (<finestra> ^rotta no -)
+   (<finestra> ^rotta (ifeq (rand-int 5) 1 si no))
+   (<z> ^tiene <ogg> - nil)
+   (<s> ^preso <ogg> -)
+   (<s> ^azione-svolta <a> - uso-fionda-lontano)
+   (write (crlf) (crlf) |HO PROVATO A COLPIRE UN PUNTO DELLA FINESTRA|)
+}
+
+
+# usa la fionda da vicino, cioè davanti alla finestra, quindi ha più probabilità di romperla
+sp {escape*propose*uso*fionda-vicino
+   (state <s> ^name escape
+      ^tasche <t1> <t2>
+      ^oggetti <finestra>
+      ^altezza [<ht> 3.5]
+      ^vicino <finestra>)
+   (<finestra> ^name finestra ^rotta no)
+   (<t1> ^tiene (<c> ^name fionda))
+   (<t2> ^tiene.name pietra)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name uso-fionda-vicino
+      ^oggetti <c>)
+}
+
+sp {escape*apply*uso*fionda-vicino
+   (state <s> ^operator <op>
+      ^oggetti <finestra>
+      ^azione-svolta <a>
+      ^tasche (<z> ^tiene <ogg>)
+      ^altezza [<ht> 3.5]
+      ^vicino <finestra>)
+   (<ogg> ^name pietra)
+   (<op> ^name uso-fionda-vicino ^oggetti <c>)
+   (<finestra> ^name finestra ^rotta no)
+   (<c> ^name fionda)
+  -->
+   (<finestra> ^rotta no -)
+   (<finestra> ^rotta (ifeq (rand-int 3) 1 si no))
+   (<z> ^tiene <ogg> - nil)
+   (<s> ^preso <ogg> -)
+   (<s> ^azione-svolta <a> - uso-fionda-vicino)
+   (write (crlf) (crlf) |HO PROVATO A COLPIRE IL PUNTO DEBOLE DELLA FINESTRA|)
+}
+
+# posiziona un tronco con il pavaimento bagnato, quindi imparerà che sarà meglio prima asciugare il pavimento
+sp {escape*propose*uso*tronco*stanza*bagnata
+   (state <s> ^name escape
+      ^tasche.tiene (<t> ^name tronco)
+      ^oggetti <t>
+      ^vicino <finestra>)
+   (<finestra> ^name finestra)
+   (<st> ^name pavimento ^stato bagnato)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name uso-tronco-bagnata
+      ^oggetti <t>)
+}
+
+sp {escape*apply*uso*tronco*stanza*bagnata
+   (state <s> ^operator <op>
+      ^altezza <aa>
+      ^tasche (<z> ^tiene <t>)
+      ^azione-svolta <a>
+      ^vicino <finestra>)
+   (<finestra> ^name finestra)
+   (<op> ^name uso-tronco-bagnata
+      ^oggetti <t>)
+   (<t> ^name tronco ^altezza <at>)
+   (<st> ^name pavimento ^stato bagnato)
+  -->
+   (<s> ^altezza <aa> -)
+   (<s> ^altezza (+ <aa> <at>))
+   (<z> ^tiene <t> - nil)
+   (<s> ^azione-svolta <a> - uso-tronco-bagnata)
+   (write (crlf) (crlf) |HO POSIZIONATO UN TRONCO CON IL PAVIMENTO BAGNATO|)
+}
+
+# posiziona un tronco con il pavaimento asciutto
+sp {escape*propose*uso*tronco*stanza*asciutta
+   (state <s> ^name escape
+      ^tasche.tiene (<t> ^name tronco)
+      ^oggetti <t>
+      ^vicino <finestra>)
+   (<finestra> ^name finestra)
+   (<st> ^name pavimento ^stato asciutto)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name uso-tronco-asciutta
+      ^oggetti <t>)
+}
+
+sp {escape*apply*uso*tronco*stanza*asciutta
+   (state <s> ^operator <op>
+      ^altezza <aa>
+      ^tasche (<z> ^tiene <t>)
+      ^azione-svolta <a>
+      ^vicino <finestra>)
+   (<finestra> ^name finestra)
+   (<op> ^name uso-tronco-asciutta
+      ^oggetti <t>)
+   (<t> ^name tronco ^altezza <at>)
+   (<st> ^name pavimento ^stato asciutto)
+  -->
+   (<s> ^altezza <aa> -)
+   (<s> ^altezza (+ <aa> <at>))
+   (<z> ^tiene <t> - nil)
+   (<s> ^azione-svolta <a> - uso-tronco-asciutta)
+   (write (crlf) (crlf) |HO POSIZIONATO UN TRONCO CON IL PAVIMENTO ASCIUTTO|)
+}
+
+# toglie dalla tasca un oggetto preso in precedenza e lo rimette per terra
+gp {escape*propose*togli
+   (state <s> ^name escape
+      ^preso <ogg>
+      ^tasche (<z> ^tiene <ogg>))
+   (<ogg> ^name [elastico rametto pietra tronco pneumatico])
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name togli
+      ^oggetti <ogg>
+      ^tasche <z>)
+}
+
+sp {escape*apply*togli
+   (state <s> ^name escape
+      ^azione-svolta <a>
+      ^operator <op>)
+   (<op> ^name togli
+      ^oggetti (<ogg> ^name <n>)
+      ^tasche <z>)
+  -->
+   (<z> ^tiene <ogg> - nil)
+   (<s> ^preso <ogg> -)
+   (<s> ^azione-svolta <a> - togli)
+   (write (crlf) (crlf) |Ho tolto dalla tasca e posato a terra: | <n>)
+}
+
+# asciuga il pavimento della stanza
+sp {escape*propose*asciuga
+   (state <s> ^name escape
+      ^stanza <st>)
+   (<st> ^name pavimento ^stato bagnato)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name asciuga)
+}
+
+sp {escape*apply*asciuga
+   (state <s> ^operator <op>
+     ^azione-svolta <a>
+     ^stanza <st>)
+   (<op> ^name asciuga)
+   (<st> ^name pavimento ^stato bagnato)
+  -->
+   (<st> ^stato bagnato - asciutto +)
+   (<s> ^azione-svolta <a> - asciuga)
+   (write (crlf) (crlf) |HO ASCIUGATO IL PAVIMENTO!|)
+}
+
+# scappa dalla stanza quando la finestra è rotta e ha raggiunto l'altezza della finestra
+sp {escape*propose*escape
+   (state <s> ^name escape
+              ^oggetti <finestra>
+              ^altezza [<ht> 3.5])
+   (<finestra> ^name finestra ^rotta si)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name escape)
+}
+
+sp {escape*apply*escape
+   (state <s> ^name escape
+              ^operator <op>)
+   (<op> ^name escape)
+  -->
+   (<s> ^fuggito si)
+}
+
+###### MONITOR ###################################################################################### 
+
+sp {escape*check*finestra*rotta
+   (state <s> ^name escape)
+   (<finestra> ^name finestra ^rotta si)
+   -->
+   (write (crlf) (crlf) |SONO RIUSCITO A ROMPERE LA FINESTRA!| (crlf) (crlf))
+}
+
+sp {escape*check*altezza*raggiunta
+   (state <s> ^name escape
+              ^altezza [<ht> 3.5])
+   -->
+   (write (crlf) (crlf) |HO RAGGIUNTO L'ALTEZZA DELLA FINESTRA!| (crlf) (crlf))
+}

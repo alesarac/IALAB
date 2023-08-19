@@ -1,0 +1,1 @@
+c:\Users\aless\.vscode\extensions\ffrankreiter.answer-set-programming-language-support-0.4.2\clingo_win.exe --parallel-mode=8 c:\Users\aless\Documents\UNI\IALAB\Progetti\Pozzato\CLINGO_SARACCO_MAGLIOLO_MARRA_2022\calendario_sportivo.cl
